@@ -1,54 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg" />
-    <ImageView
-        android:id="@+id/start"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/start" />
 
-    <ImageView
-        android:id="@+id/bird"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/bird"
-        android:scaleType="centerInside"/>
-    <ImageView
-        android:id="@+id/end"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gameover"/>
-    <ImageView
-        android:id="@+id/column"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/column"
-        android:scaleType="centerInside"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/score1"
-        android:textSize="50sp"
-        android:text="得分:"
-        android:gravity="center"/>
-    <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/score2"
-    android:gravity="center"
-        android:layout_centerInParent="true"
-    android:textSize="50sp"
-        android:layout_toRightOf="@+id/score1"/>
 
-</RelativeLayout>
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg" />
+
+        <ImageView
+            android:id="@+id/start"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/start" />
+
+        <ImageView
+            android:id="@+id/bird"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/bird" />
+
+        <ImageView
+            android:id="@+id/end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gameover" />
+
+        <ImageView
+            android:id="@+id/column"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:src="@drawable/column" />
+
+        <TextView
+            android:id="@+id/score2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="50sp"
+            />
+
+
+
+
+        <fragment
+            android:id="@+id/historylist"
+            android:name="com.example.flybird.History"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

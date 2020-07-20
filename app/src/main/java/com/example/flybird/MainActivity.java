@@ -1,13 +1,22 @@
 package com.example.flybird;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.litepal.LitePal;
 
@@ -20,8 +29,8 @@ public class MainActivity extends AppCompatActivity{
     ImageView bird;
     ImageView end;
     ImageView column;
-    TextView score1;
     TextView score2;
+    DrawerLayout drawerLayout;
 
     private final int clickToRun=0;
     private final int Run=1;
@@ -48,71 +57,79 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+        }else {
+            Run();
+        }
+    }
+    private void Run() {
+        background = (ImageView) findViewById(R.id.background);
+        start = (ImageView) findViewById(R.id.start);
+        bird = (ImageView) findViewById(R.id.bird);
+        end = (ImageView) findViewById(R.id.end);
+        column = (ImageView) findViewById(R.id.column);
+        score2 = (TextView) findViewById(R.id.score2);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        background=(ImageView)findViewById(R.id.background);
-        start=(ImageView)findViewById(R.id.start);
-        bird=(ImageView)findViewById(R.id.bird);
-        end=(ImageView)findViewById(R.id.end);
-        column=(ImageView)findViewById(R.id.column);
-        score1=(TextView)findViewById(R.id.score1);
-        score2=(TextView)findViewById(R.id.score2);
 
-        initbirdX=(bird.getTranslationX()-100);
-        initcolumnX=(column.getTranslationX()+500);
+        initbirdX = (bird.getTranslationX() - 100);
+        initcolumnX = (column.getTranslationX() + 500);
         bird.setTranslationX(initbirdX);
         column.setTranslationX(initcolumnX);
 
         bird.setVisibility(View.GONE);
         end.setVisibility(View.GONE);
         column.setVisibility(View.GONE);
-        score1.setVisibility(View.GONE);
+
 
         background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (state){
+                switch (state) {
                     case clickToRun:
-                        score=0;
+                        score = 0;
                         end.setVisibility(View.GONE);
                         start.setVisibility(View.GONE);
                         bird.setVisibility(View.VISIBLE);
                         column.setVisibility(View.VISIBLE);
                         //游戏运行中
-                        state=Run;
+                        state = Run;
                         birdRun();
                         break;
                     case Run:
-                        for(int i=0;i<1000;i++){
-                        bird.setTranslationY(bird.getTranslationY() - 0.2f);}
+                        for (int i = 0; i < 1000; i++) {
+                            bird.setTranslationY(bird.getTranslationY() - 0.2f);
+                        }
                         break;
                     case clickToOver:
                         end.setVisibility(View.VISIBLE);
                         column.setVisibility(View.GONE);
                         //展示分数
                         score2.setText(String.valueOf(score));
-                        score1.setVisibility(View.VISIBLE);
                         score2.setVisibility(View.VISIBLE);
                         //存入数据库
                         saveDB();
-                        state=clickToStart;
+                        state = clickToStart;
                         break;
                     case clickToStart:
+                        drawerLayout.openDrawer(GravityCompat.START);
                         end.setVisibility(View.GONE);
                         bird.setVisibility(View.GONE);
                         column.setVisibility(View.GONE);
                         start.setVisibility(View.VISIBLE);
-                        score1.setVisibility(View.GONE);
                         score2.setVisibility(View.GONE);
                         //复位小鸟柱子
-                        birdY=initbirdY;
-                        columnX=initcolumnX;
-                        columnY=initcolumnY;
+                        birdY = initbirdY;
+                        columnX = initcolumnX;
+                        columnY = initcolumnY;
 
                         bird.setTranslationY(birdY);
                         column.setTranslationX(columnX);
                         column.setTranslationY(columnY);
 
-                        state=clickToRun;
+                        state = clickToRun;
                         break;
                     default:
                         break;
@@ -121,17 +138,11 @@ public class MainActivity extends AppCompatActivity{
         });
 
     }
-
     private void saveDB() {
         Score scoredb=new Score();
         scoredb.setScore(score);
         scoredb.save();
 
-        List<Score> scores= LitePal.select("score").order("score desc").find(Score.class);
-
-//        for(Score scor:scores){
-//            scores[i]
-//        }
     }
 
 
@@ -179,5 +190,15 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Run();
+                }else{
+                    Toast.makeText(this,"You denied the permission",Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
 }

@@ -22,8 +22,9 @@ public class History extends Fragment {
     List<String> dataList=new ArrayList<>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-     View view=inflater.inflate(R.layout.historylist,container,false);
-     listView=(ListView)view.findViewById(R.id.list_view);
+        View view=inflater.inflate(R.layout.historylist,container,false);
+        //把数据库通过adapter添加进listview
+        listView=(ListView)view.findViewById(R.id.list_view);
         adapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
         return view;
@@ -33,10 +34,13 @@ public class History extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
         dataList.clear();
+        //查询数据库
         List<Score> scores= LitePal.select("score").order("score desc").find(Score.class);
+        //添加进listview
         for(Score scor:scores){
             dataList.add(String.valueOf(scor.getScore()));
         }
+        //通知改变
         adapter.notifyDataSetChanged();
         listView.setSelection(0);
     }

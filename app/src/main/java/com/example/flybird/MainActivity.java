@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
@@ -73,22 +74,23 @@ public class MainActivity extends AppCompatActivity{
         score2 = (TextView) findViewById(R.id.score2);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-
+        //定义各种图片初始位置
         initbirdX = (bird.getTranslationX() - 100);
         initcolumnX = (column.getTranslationX() + 500);
         bird.setTranslationX(initbirdX);
         column.setTranslationX(initcolumnX);
 
+        //初始状态
         bird.setVisibility(View.GONE);
         end.setVisibility(View.GONE);
         column.setVisibility(View.GONE);
 
-
+        //点击背景图片来控制游戏
         background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch (state) {
-                    case clickToRun:
+                    case clickToRun://状态：初始到运行中
                         score = 0;
                         end.setVisibility(View.GONE);
                         start.setVisibility(View.GONE);
@@ -98,12 +100,13 @@ public class MainActivity extends AppCompatActivity{
                         state = Run;
                         birdRun();
                         break;
-                    case Run:
+                    case Run://状态：运行中
+                        //小鸟点击一次向上
                         for (int i = 0; i < 1000; i++) {
                             bird.setTranslationY(bird.getTranslationY() - 0.2f);
                         }
                         break;
-                    case clickToOver:
+                    case clickToOver://状态：运行到结束
                         end.setVisibility(View.VISIBLE);
                         column.setVisibility(View.GONE);
                         //展示分数
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity{
                         saveDB();
                         state = clickToStart;
                         break;
-                    case clickToStart:
+                    case clickToStart://状态：结束到重新开始
                         drawerLayout.openDrawer(GravityCompat.START);
                         end.setVisibility(View.GONE);
                         bird.setVisibility(View.GONE);
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
     }
-    private void saveDB() {
+    private void saveDB() {//存入数据库
         Score scoredb=new Score();
         scoredb.setScore(score);
         scoredb.save();
@@ -148,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void birdRun() {
         handler.removeCallbacks(birdColumnMove);
-        handler.postDelayed(birdColumnMove, 10);
+        handler.postDelayed(birdColumnMove, 10);//子线程，每10毫秒
     }
 
     private final Runnable birdColumnMove = new Runnable() {
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity{
             birdY=bird.getTranslationY();
             columnX=column.getTranslationX();
             columnY=column.getTranslationY();
+            //重复柱子
             if(columnX<(initbirdX-200)){
                 columnX=initcolumnX;
                 columnY=(r.nextInt(600)-300);
@@ -166,22 +170,18 @@ public class MainActivity extends AppCompatActivity{
             }
 
 
-            if(birdY<600&&birdY>-1100) {
+            if(birdY<600&&birdY>-1100) {//判断鸟是否超出上下边界
                 if (state == Run) {
-                    if(bird.getTranslationX()==columnX){
+                    if(bird.getTranslationX()==columnX){//判断柱子和小鸟是否撞
                         if(birdY<(columnY-100)||birdY>(columnY+100)){
-
                             state=clickToOver;
-                            Log.d("collision","abc"+bird.getTranslationX()+birdY+columnY);
-
                         }else{
                             score+=1;
                             Log.d("DDD","score "+score);
                         }}
+                    //小鸟自然下坠，柱子往左走
                     column.setTranslationX(columnX-8);
                     bird.setTranslationY(birdY + 8);
-                    Log.d("AAA", "X is " + bird.getTranslationY());
-                    Log.d("bbb", "X is " + column.getTranslationX());
                 }
 
             }else{
